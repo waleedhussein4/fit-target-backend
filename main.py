@@ -16,6 +16,10 @@ def get_db():
   finally:
     db.close()
     
+@app.get("/")
+def read_root():
+  return {"Hello World"}
+    
 @app.post("/users/", response_model=schemas.User)
 def create_user(user:schemas.UserCreate, db:Session=Depends(get_db)):
   db_user = crud.get_user_by_email(db, email=user.email)
