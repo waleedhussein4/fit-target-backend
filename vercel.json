@@ -6,7 +6,7 @@
       "use": "@vercel/python"
     }
   ],
-  "routes": [
+  "routes": [ 
     {
       "src": "/user/signup",
       "dest": "main.py"
