@@ -27,7 +27,7 @@ def create_user(user: Schemas.userCreate.UserCreate, db: Session = Depends(get_d
     return Crud.usercrud.create_user(db=db, user=user)
 
 @app.post("/user/signin")
-def sign_in(email: str, password: str, db: Session = Depends(get_db)):
+def sign_in(user: Schemas.userCreate.UserSignIn, db: Session = Depends(get_db)):
     user = Crud.usercrud.get_user_by_email(db, email)
     if not user or user.password != password:
         raise HTTPException(status_code=401, detail="Invalid email or password")
