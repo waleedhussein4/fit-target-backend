@@ -1,13 +1,13 @@
 from sqlalchemy import Column,  Integer, String, Float  
-from sqlalchemy.orm import relationship
+
 
 from database import Base
 
 
-class User(Base): 
+class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     firstName = Column(String)
     lastName = Column(String)
     email = Column(String, unique=True, index=True)
@@ -19,6 +19,8 @@ class User(Base):
     targetWeight = Column(Float)
     weightMeasurementPreference = Column(String)
     targetPeriod = Column(Integer)
+
+
 
 
 

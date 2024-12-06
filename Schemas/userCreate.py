@@ -12,3 +12,7 @@ class UserCreate(BaseModel):
     targetWeight: float
     weightMeasurementPreference: str
     targetPeriod: int
+
+class UserSignIn(BaseModel):
+    email: EmailStr
+    password: str
