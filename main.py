@@ -61,9 +61,9 @@ def edit_user_profile(
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Update the user
-    updated_user = Crud.usercrud.update_user(
-        db, user_id=db_user.id, updates=updates.dict(exclude_unset=True)
+    # Update the user using email
+    updated_user = Crud.usercrud.update_user_by_email(
+        db, email=user_email, updates=updates.model_dump(exclude_unset=True)
     )
     return {"message": "User updated successfully", "user": updated_user}
 
