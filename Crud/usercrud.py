@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-
 import Models.userModel, Schemas.userCreate
 
 def get_user(db: Session, user_id: int):
@@ -34,4 +33,16 @@ def create_user(db: Session, user: Schemas.userCreate.UserCreate):
     db.refresh(db_user)
     return db_user
 
+def update_user(db: Session, user_id: int, updates: dict):
+    user = db.query(Models.userModel.User).filter(Models.userModel.User.id == user_id).first()
+    if not user:
+        return None
 
+    # Dynamically update fields based on the updates dictionary
+    for key, value in updates.items():
+        if hasattr(user, key):
+            setattr(user, key, value)
+
+    db.commit()
+    db.refresh(user)
+    return user
