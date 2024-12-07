@@ -15,7 +15,7 @@ class UserCreate(BaseModel):
     targetPeriod: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserSignIn(BaseModel):
     email: EmailStr
@@ -35,4 +35,4 @@ class UserUpdate(BaseModel):
     targetPeriod: Optional[int]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
