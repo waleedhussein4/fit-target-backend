@@ -19,6 +19,7 @@ def get_db():
     finally:
         db.close()
 
+
 @app.post("/user/signup", response_model=Schemas.userCreate.UserCreate)
 def create_user(user: Schemas.userCreate.UserCreate, db: Session = Depends(get_db)):
     db_user = Crud.usercrud.get_user_by_email(db, email=user.email)
@@ -26,9 +27,10 @@ def create_user(user: Schemas.userCreate.UserCreate, db: Session = Depends(get_d
         raise HTTPException(status_code=400, detail="Email already registered")
     return Crud.usercrud.create_user(db=db, user=user)
 
+
 @app.post("/user/signin")
 def sign_in(user: Schemas.userCreate.UserSignIn, db: Session = Depends(get_db)):
-    db_user= Crud.usercrud.get_user_by_email(db, user.email)
+    db_user = Crud.usercrud.get_user_by_email(db, user.email)
     if not db_user or user.password != db_user.password:
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
@@ -40,9 +42,28 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = Crud.usercrud.get_users(db, skip=skip, limit=limit)
     return users
 
+
 @app.get("/users/{user_email}", response_model=Schemas.userCreate.UserCreate)
 def read_user(user_email: str, db: Session = Depends(get_db)):
     db_user = Crud.usercrud.get_user_by_email(db, user_email=user_email)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
+
+
+@app.put("/users/{user_email}")
+def edit_user_profile(
+    user_email: str, 
+    updates: Schemas.userCreate.UserUpdate, 
+    db: Session = Depends(get_db)):
+    # Get the user by email
+    db_user = Crud.usercrud.get_user_by_email(db, email=user_email)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Update the user
+    updated_user = Crud.usercrud.update_user(
+        db, user_id=db_user.id, updates=updates.dict(exclude_unset=True)
+    )
+    return {"message": "User updated successfully", "user": updated_user}
+
