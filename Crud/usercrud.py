@@ -33,8 +33,8 @@ def create_user(db: Session, user: Schemas.userCreate.UserCreate):
     db.refresh(db_user)
     return db_user
 
-def update_user(db: Session, user_id: int, updates: dict):
-    user = db.query(Models.userModel.User).filter(Models.userModel.User.id == user_id).first()
+def update_user_by_email(db: Session, email: str, updates: dict):
+    user = db.query(Models.userModel.User).filter(Models.userModel.User.email == email).first()
     if not user:
         return None
 
