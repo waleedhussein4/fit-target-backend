@@ -14,9 +14,6 @@ class UserCreate(BaseModel):
     weightMeasurementPreference: str
     targetPeriod: int
 
-    class Config:
-        from_attributes = True
-
 class UserSignIn(BaseModel):
     email: EmailStr
     password: str
@@ -33,6 +30,3 @@ class UserUpdate(BaseModel):
     targetWeight: Optional[float]
     weightMeasurementPreference: Optional[str]
     targetPeriod: Optional[int]
-
-    class Config:
-        from_attributes = True
