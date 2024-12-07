@@ -14,6 +14,9 @@ class UserCreate(BaseModel):
     weightMeasurementPreference: str
     targetPeriod: int
 
+    class Config:
+        orm_mode = True
+
 class UserSignIn(BaseModel):
     email: EmailStr
     password: str
