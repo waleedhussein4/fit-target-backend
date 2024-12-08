@@ -43,4 +43,3 @@ class Set(Base):
     def __repr__(self):
       return (f"<Set(id={self.id}, exercise_id={self.exercise_id}, weight={self.weight}, "
         f"reps={self.reps}, created_at={self.created_at})>")
-```
