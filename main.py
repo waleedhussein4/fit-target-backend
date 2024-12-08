@@ -22,14 +22,6 @@ def get_db():
     finally:
         db.close()
 
-
-@app.post("/user/signup", response_model=Schemas.userCreate.UserCreate)
-def create_user(user: Schemas.userCreate.UserCreate, db: Session = Depends(get_db)):
-    db_user = Crud.usercrud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return Crud.usercrud.create_user(db=db, user=user)
-
 @app.post("/user/signin")
 def sign_in(user: Schemas.userCreate.UserSignIn, db: Session = Depends(get_db)):
     db_user= Crud.usercrud.get_user_by_email(db, user.email)
@@ -72,6 +64,13 @@ def edit_user_profile(
 logging.basicConfig(level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
+@app.post("/user/signup", response_model=Schemas.userCreate.UserCreate)
+def create_user(user: Schemas.userCreate.UserCreate, db: Session = Depends(get_db)):
+    db_user = Crud.usercrud.get_user_by_email(db, email=user.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return Crud.usercrud.create_user(db=db, user=user)
+
 @app.post("/sync/check-sync")
 def check_sync_status(
     sync_data: Schemas.sync.CheckSync,
@@ -84,7 +83,7 @@ def check_sync_status(
         # Call the CRUD function to check sync status
         status = Crud.usercrud.check_sync_status(
             db=db,
-            user_id=sync_data.userId,
+            user_id=sync_data.user_id,
             workout_ids=sync_data.workoutsPendingUpload,
             food_entries=sync_data.foodEntriesPendingUpload,
             last_local_sync=sync_data.lastLocalSync,
