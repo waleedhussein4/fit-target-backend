@@ -108,3 +108,31 @@ def check_sync_status(
         # Log any other unexpected errors
         logger.error(f"Unexpected error during sync status check: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error: Unexpected issue: {str(e)}")
+    
+@app.post("/sync/")
+def sync_workouts(sync_data: Schemas.sync.SyncRequest, db: Session = Depends(get_db)):
+    """
+    Syncs workout data between the client and server.
+    """
+    try:
+        # Call the CRUD function to sync workout data and send back the workouts to be locally stored
+        incoming_workouts = Crud.usercrud.sync_workouts(db=db, sync_data=sync_data)
+        return {"workouts": incoming_workouts}
+    
+    except SQLAlchemyError as e:
+        # Log SQLAlchemy database errors
+        logger.error(f"Database error during workout sync: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error: Database issue")
+    
+    except AttributeError as e:
+        # Handle attribute errors (e.g., missing fields) and display the received data and their types
+        logger.error(f"Attribute error during workout sync: {str(e)}")
+        logger.error(f"Received data: {sync_data}")
+        logger.error(f"Data types: {[(key, type(value)) for key, value in sync_data.dict().items()]}")
+        raise HTTPException(status_code=400, detail="Bad request: Missing or incorrect fields")
+    
+    except Exception as e:
+        # Log any other unexpected errors
+        logger.error(f"Unexpected error during workout sync: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error: Unexpected issue: {str(e)}")
+    

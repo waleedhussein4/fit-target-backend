@@ -6,3 +6,8 @@ class CheckSync(BaseModel):
     workoutsPendingUpload: List[Dict[str, str]]  # List of workout data with UUID and CREATED_AT
     foodEntriesPendingUpload: List[Dict[str, str]]  # Placeholder for food entries with similar structure
     lastLocalSync: str  # ISO 8601 formatted string for the last sync timestamp
+
+class SyncRequest(BaseModel):
+    userId: str
+    workoutsPendingUpload: List[dict]  # Accept raw workout objects as dictionaries
+    lastLocalSync: str  # ISO 8601 formatted string
