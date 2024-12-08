@@ -67,3 +67,22 @@ def edit_user_profile(
     )
     return {"message": "User updated successfully", "user": updated_user}
 
+
+@app.post("/sync/check-sync")
+def check_sync_status(
+    sync_data: Schemas.sync.CheckSync,
+    db: Session = Depends(get_db)
+):
+    """
+    Checks sync status for the given workout IDs and food entries.
+    """
+    # Call the CRUD function to check sync status
+    status = Crud.usercrud.check_sync_status(
+        db=db,
+        user_id=sync_data.userId,
+        workout_ids=sync_data.workoutsPendingUpload,
+        food_entries=sync_data.foodEntriesPendingUpload,
+        last_local_sync=sync_data.lastLocalSync,
+    )
+
+    return {"sync_status": status}
