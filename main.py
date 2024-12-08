@@ -98,9 +98,9 @@ def check_sync_status(
         raise HTTPException(status_code=500, detail="Internal server error: Database issue")
 
     except AttributeError as e:
-        # Handle attribute errors (e.g., missing fields)
+        # Handle attribute errors (e.g., missing fields) and display the received data
         logger.error(f"Attribute error during sync status check: {str(e)}")
-        raise HTTPException(status_code=400, detail="Invalid request data: Missing or incorrect fields")
+        raise HTTPException(status_code=400, detail=f"Invalid data: {sync_data.dict()}")
 
     except Exception as e:
         # Log any other unexpected errors
