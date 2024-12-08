@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-import Models.userModel, Schemas.userCreate
+import Models.userModel, Schemas.userCreate, Schemas.sync
 from Models.userModel import User
 from typing import List, Any, Dict
 from fastapi.exceptions import HTTPException
