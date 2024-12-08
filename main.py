@@ -54,23 +54,28 @@ def read_user(user_email: str, db: Session = Depends(get_db)):
 
 @app.put("/users/")
 def edit_user_profile(
-    updates: Schemas.userCreate.UserUpdate,  # Positional argument first
-    user_email: str = Query(..., description="Email of the user to update"),  # Keyword argument follows
+    updates: Schemas.userCreate.UserUpdate,
+    user_email: str = Query(..., description="Email of the user to update"),
     db: Session = Depends(get_db)):
     logger.info(f"Updating user with email: {user_email}")
     
-    # Fetch the user by email
+    
     db_user = Crud.usercrud.get_user_by_email(db, email=user_email)
     if not db_user:
         logger.warning(f"User with email {user_email} not found.")
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Update the user
+    # Extract updates for allowed fields
+    allowed_updates = updates.model_dump(exclude_unset=True)
+    logger.info(f"Allowed updates: {allowed_updates}")
+    
+    
     updated_user = Crud.usercrud.update_user_by_email(
-        db, email=user_email, updates=updates.model_dump(exclude_unset=True)
+        db, email=user_email, updates=allowed_updates
     )
     logger.info(f"User with email {user_email} updated successfully.")
     return {"message": "User updated successfully", "user": updated_user}
+
 
 
 @app.post("/user/signup", response_model=Schemas.userCreate.UserCreate)
