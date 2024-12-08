@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 
 import Crud.usercrud
 import Models.userModel
@@ -7,6 +8,7 @@ import Crud, Models, Schemas
 import Schemas.userCreate
 import Schemas.sync
 from database import SessionLocal, engine
+import logging
 
 Models.userModel.Base.metadata.create_all(bind=engine)
 
@@ -69,6 +71,9 @@ def edit_user_profile(
     return {"message": "User updated successfully", "user": updated_user}
 
 
+logging.basicConfig(level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
+
 @app.post("/sync/check-sync")
 def check_sync_status(
     sync_data: Schemas.sync.CheckSync,
@@ -77,13 +82,29 @@ def check_sync_status(
     """
     Checks sync status for the given workout IDs and food entries.
     """
-    # Call the CRUD function to check sync status
-    status = Crud.usercrud.check_sync_status(
-        db=db,
-        user_id=sync_data.userId,
-        workout_ids=sync_data.workoutsPendingUpload,
-        food_entries=sync_data.foodEntriesPendingUpload,
-        last_local_sync=sync_data.lastLocalSync,
-    )
+    try:
+        # Call the CRUD function to check sync status
+        status = Crud.usercrud.check_sync_status(
+            db=db,
+            user_id=sync_data.userId,
+            workout_ids=sync_data.workoutsPendingUpload,
+            food_entries=sync_data.foodEntriesPendingUpload,
+            last_local_sync=sync_data.lastLocalSync,
+        )
 
-    return {"sync_status": status}
+        return {"sync_status": status}
+
+    except SQLAlchemyError as e:
+        # Log SQLAlchemy database errors
+        logger.error(f"Database error during sync status check: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error: Database issue")
+
+    except AttributeError as e:
+        # Handle attribute errors (e.g., missing fields)
+        logger.error(f"Attribute error during sync status check: {str(e)}")
+        raise HTTPException(status_code=400, detail="Invalid request data: Missing or incorrect fields")
+
+    except Exception as e:
+        # Log any other unexpected errors
+        logger.error(f"Unexpected error during sync status check: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error: Unexpected issue")
