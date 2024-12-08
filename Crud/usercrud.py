@@ -1,5 +1,8 @@
 from sqlalchemy.orm import Session
 import Models.userModel, Schemas.userCreate
+from models.userModel import User
+from typing import List, Any
+from fastapi.exceptions import HTTPException
 
 def get_user(db: Session, user_id: int):
     return db.query(Models.userModel.User).filter(Models.userModel.User.id == user_id).first()
@@ -46,3 +49,26 @@ def update_user_by_email(db: Session, email: str, updates: dict):
     db.commit()
     db.refresh(user)
     return user
+
+def check_sync_status(db: Session, workout_ids: List[int], food_entries: List[Any], lastLocalSync: str, user_id: str):
+    # Validate user existence
+    user = db.query(Models.userModel.User).filter(Models.userModel.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    has_pending_uploads = bool(workout_ids)
+    
+    # Identify server-side unsynced workouts (created after last sync)
+    server_unsynced_workouts = db.query(Models.workoutModel.Workout).filter(
+        Models.workoutModel.Workout.owner == user.id,
+        Models.workoutModel.Workout.created_at > lastLocalSync
+    ).all()
+    
+    unsynced_food_entries = []  # TODO: Implement food entry sync logic later
+    
+    sync_required = has_pending_uploads or bool(server_unsynced_workouts)
+
+    # Construct and return the sync status
+    return {
+        "is_synced": not sync_required,
+    }
