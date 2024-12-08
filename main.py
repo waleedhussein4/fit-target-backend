@@ -5,6 +5,7 @@ import Crud.usercrud
 import Models.userModel
 import Crud, Models, Schemas
 import Schemas.userCreate
+import Schemas.sync
 from database import SessionLocal, engine
 
 Models.userModel.Base.metadata.create_all(bind=engine)
