@@ -50,7 +50,7 @@ def update_user_by_email(db: Session, email: str, updates: dict):
     db.refresh(user)
     return user
 
-def check_sync_status(db: Session, workout_ids: List[Dict[str, str]], food_entries: List[Dict[str, str]], lastLocalSync: str, user_id: str):
+def check_sync_status(db: Session, user_id: str, workout_ids: List[Dict[str, str]], food_entries: List[Dict[str, str]], lastLocalSync: str):
     # Validate user existence
     user = db.query(Models.userModel.User).filter(Models.userModel.User.id == user_id).first()
     if not user:
