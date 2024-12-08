@@ -104,4 +104,4 @@ def check_sync_status(
     except Exception as e:
         # Log any other unexpected errors
         logger.error(f"Unexpected error during sync status check: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error: Unexpected issue")
+        raise HTTPException(status_code=500, detail="Internal server error: Unexpected issue: {str(e)}")
