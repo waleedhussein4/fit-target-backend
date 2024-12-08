@@ -90,7 +90,7 @@ def check_sync_status(
             lastLocalSync=sync_data.lastLocalSync,
         )
 
-        return {"sync_status": status}
+        return {"is_synced": status}
 
     except SQLAlchemyError as e:
         # Log SQLAlchemy database errors

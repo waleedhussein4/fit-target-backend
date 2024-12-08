@@ -67,6 +67,6 @@ def check_sync_status(db: Session, userId: str, workoutsPendingUpload: List[Dict
     unsynced_food_entries = []  # TODO: Implement food entry sync logic later
     
     sync_required = has_pending_uploads or bool(server_unsynced_workouts)
-
-    # Construct and return the sync status
+    
+    # return only whether its synced or not
     return not sync_required
