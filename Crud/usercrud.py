@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 import Models.userModel, Schemas.userCreate
 from Models.userModel import User
-from typing import List, Any
+from typing import List, Any, Dict
 from fastapi.exceptions import HTTPException
 
 def get_user(db: Session, user_id: int):
@@ -50,7 +50,7 @@ def update_user_by_email(db: Session, email: str, updates: dict):
     db.refresh(user)
     return user
 
-def check_sync_status(db: Session, workout_ids: List[int], food_entries: List[Any], lastLocalSync: str, user_id: str):
+def check_sync_status(db: Session, workout_ids: List[Dict[str, str]], food_entries: List[Dict[str, str]], lastLocalSync: str, user_id: str):
     # Validate user existence
     user = db.query(Models.userModel.User).filter(Models.userModel.User.id == user_id).first()
     if not user:
