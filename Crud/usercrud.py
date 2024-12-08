@@ -41,7 +41,7 @@ def update_user_by_email(db: Session, email: str, updates: dict):
     if not user:
         return None
 
-    # Dynamically update fields based on the updates dictionary
+    # Dynamically update fields 
     for key, value in updates.items():
         if hasattr(user, key):
             setattr(user, key, value)
@@ -125,3 +125,4 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
     db.commit()
     #return unsynced_workouts to be locally stored
     return unsynced_workouts
+

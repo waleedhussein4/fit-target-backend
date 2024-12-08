@@ -19,14 +19,9 @@ class UserSignIn(BaseModel):
     password: str
 
 class UserUpdate(BaseModel):
-    firstName: Optional[str]
-    lastName: Optional[str]
-    email: Optional[EmailStr]
-    password: Optional[str]
     age: Optional[int]
-    gender: Optional[str]
     weight: Optional[float]
     height: Optional[float]
-    targetWeight: Optional[float]
-    weightMeasurementPreference: Optional[str]
-    targetPeriod: Optional[int]
+    targetWeight: Optional[float] 
+    targetPeriod: Optional[int]  
+    weightMeasurementPreference: Optional[str]  
