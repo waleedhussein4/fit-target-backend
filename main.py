@@ -122,7 +122,7 @@ def check_sync_status(
         logger.error(f"Unexpected error during sync status check: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error: Unexpected issue: {str(e)}")
     
-@app.post("/sync/")
+@app.post("/sync")
 def sync_workouts(sync_data: Schemas.sync.SyncRequest, db: Session = Depends(get_db)):
     """
     Syncs workout data between the client and server.
