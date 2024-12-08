@@ -52,11 +52,11 @@ def update_user_by_email(db: Session, email: str, updates: dict):
 
 def check_sync_status(db: Session, userId: str, workoutsPendingUpload: List[Dict[str, str]], foodEntriesPendingUpload: List[Dict[str, str]], lastLocalSync: str):
     # Validate user existence
-    user = db.query(Models.userModel.User).filter(Models.userModel.User.id == user_id).first()
+    user = db.query(Models.userModel.User).filter(Models.userModel.User.id == userId).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    has_pending_uploads = bool(workout_ids)
+    has_pending_uploads = bool(workoutsPendingUpload)
     
     # Identify server-side unsynced workouts (created after last sync)
     server_unsynced_workouts = db.query(Models.workoutModel.Workout).filter(
