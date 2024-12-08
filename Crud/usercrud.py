@@ -69,6 +69,4 @@ def check_sync_status(db: Session, userId: str, workoutsPendingUpload: List[Dict
     sync_required = has_pending_uploads or bool(server_unsynced_workouts)
 
     # Construct and return the sync status
-    return {
-        "is_synced": not sync_required,
-    }
+    return not sync_required
