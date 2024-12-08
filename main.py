@@ -4,6 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 import Crud.usercrud
 import Models.userModel
+import Models.workoutModel
 import Crud, Models, Schemas
 import Schemas.userCreate
 import Schemas.sync
