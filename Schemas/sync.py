@@ -8,6 +8,6 @@ class CheckSync(BaseModel):
     lastLocalSync: str  # ISO 8601 formatted string for the last sync timestamp
 
 class SyncRequest(BaseModel):
-    userId: str
+    userId: int
     workoutsPendingUpload: List[dict]  # Accept raw workout objects as dictionaries
     lastLocalSync: str  # ISO 8601 formatted string
