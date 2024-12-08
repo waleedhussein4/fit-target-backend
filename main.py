@@ -84,8 +84,8 @@ def check_sync_status(
         status = Crud.usercrud.check_sync_status(
             db=db,
             user_id=sync_data.user_id,
-            workout_ids=sync_data.workoutsPendingUpload,
-            food_entries=sync_data.foodEntriesPendingUpload,
+            workoutsPendingUpload=sync_data.workoutsPendingUpload,
+            foodEntriesPendingUpload=sync_data.foodEntriesPendingUpload,
             lastLocalSync=sync_data.lastLocalSync,
         )
 
