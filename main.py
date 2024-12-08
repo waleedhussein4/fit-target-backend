@@ -86,7 +86,7 @@ def check_sync_status(
             user_id=sync_data.user_id,
             workout_ids=sync_data.workoutsPendingUpload,
             food_entries=sync_data.foodEntriesPendingUpload,
-            last_local_sync=sync_data.lastLocalSync,
+            lastLocalSync=sync_data.lastLocalSync,
         )
 
         return {"sync_status": status}
