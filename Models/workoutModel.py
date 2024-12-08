@@ -35,7 +35,7 @@ class Set(Base):
     __tablename__ = "sets"
 
     id = Column(Integer, primary_key=True, autoincrement=True)  # Cloud database unique identifier
-    uuid = Column(String, nullable=False, unique=True, index=True
+    uuid = Column(String, nullable=False, unique=True, index=True)
     exercise_uuid = Column(String, ForeignKey("exercises.uuid"), nullable=False, index=True)  # Reference to Exercise
     weight = Column(Float, nullable=False)
     reps = Column(Integer, nullable=False)
