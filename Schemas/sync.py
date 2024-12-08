@@ -1,8 +1,8 @@
-from pydantic import BaseModel, EmailStr
-from typing import List, Any
+from pydantic import BaseModel
+from typing import List, Dict
 
 class CheckSync(BaseModel):
-    user_id: int
-    workoutsPendingUpload: List[int]  # Local workout IDs pending upload
-    foodEntriesPendingUpload: List[Any]  # Local food entry identifiers pending upload
+    user_id: str  # Adjusted to match `userId` as a string (UUID or unique identifier)
+    workoutsPendingUpload: List[Dict[str, str]]  # List of workout data with UUID and CREATED_AT
+    foodEntriesPendingUpload: List[Dict[str, str]]  # Placeholder for food entries with similar structure
     lastLocalSync: str  # ISO 8601 formatted string for the last sync timestamp
