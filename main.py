@@ -1,6 +1,7 @@
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from fastapi import Query
 
 import Crud.usercrud
 import Models.userModel
@@ -10,6 +11,12 @@ import Schemas.userCreate
 import Schemas.sync
 from database import SessionLocal, engine
 import logging
+
+logging.basicConfig(
+    level=logging.INFO,  # Set the logging level
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 Models.userModel.Base.metadata.create_all(bind=engine)
 
@@ -45,25 +52,26 @@ def read_user(user_email: str, db: Session = Depends(get_db)):
     return db_user
 
 
-@app.put("/users/{user_email}")
+@app.put("/users/")
 def edit_user_profile(
-    user_email: str, 
-    updates: Schemas.userCreate.UserUpdate, 
+    updates: Schemas.userCreate.UserUpdate,  # Positional argument first
+    user_email: str = Query(..., description="Email of the user to update"),  # Keyword argument follows
     db: Session = Depends(get_db)):
-    # Get the user by email
+    logger.info(f"Updating user with email: {user_email}")
+    
+    # Fetch the user by email
     db_user = Crud.usercrud.get_user_by_email(db, email=user_email)
     if not db_user:
+        logger.warning(f"User with email {user_email} not found.")
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Update the user using email
+    # Update the user
     updated_user = Crud.usercrud.update_user_by_email(
         db, email=user_email, updates=updates.model_dump(exclude_unset=True)
     )
+    logger.info(f"User with email {user_email} updated successfully.")
     return {"message": "User updated successfully", "user": updated_user}
 
-
-logging.basicConfig(level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s")
-logger = logging.getLogger(__name__)
 
 @app.post("/user/signup", response_model=Schemas.userCreate.UserCreate)
 def create_user(user: Schemas.userCreate.UserCreate, db: Session = Depends(get_db)):
