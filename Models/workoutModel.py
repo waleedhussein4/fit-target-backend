@@ -23,7 +23,7 @@ class Exercise(Base):
     __tablename__ = "exercises"
 
     id = Column(Integer, primary_key=True, autoincrement=True)  # Cloud database unique identifier
-    uuid = Column(String, nullable=False, unique=True, index=True
+    uuid = Column(String, nullable=False, unique=True, index=True)
     workout_uuid = Column(String, ForeignKey("workouts.uuid"), nullable=False, index=True)  # Reference to Workout
     reference_id = Column(Integer, nullable=False, index=True)  # Reference to Workout
 
