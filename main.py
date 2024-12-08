@@ -83,7 +83,7 @@ def check_sync_status(
         # Call the CRUD function to check sync status
         status = Crud.usercrud.check_sync_status(
             db=db,
-            user_id=sync_data.user_id,
+            userId=sync_data.user_id,
             workoutsPendingUpload=sync_data.workoutsPendingUpload,
             foodEntriesPendingUpload=sync_data.foodEntriesPendingUpload,
             lastLocalSync=sync_data.lastLocalSync,
