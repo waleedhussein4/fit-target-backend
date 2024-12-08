@@ -1,6 +1,5 @@
  fastapi
  sqlalchemy
  psycopg2-binary
- psycopg2
  uvicorn
  pydantic[email]
