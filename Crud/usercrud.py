@@ -3,6 +3,7 @@ import Models.userModel, Schemas.userCreate, Schemas.sync
 from Models.userModel import User
 from typing import List, Any, Dict
 from fastapi.exceptions import HTTPException
+from datetime import datetime
 
 def get_user(db: Session, user_id: int):
     return db.query(Models.userModel.User).filter(Models.userModel.User.id == user_id).first()
@@ -50,18 +51,19 @@ def update_user_by_email(db: Session, email: str, updates: dict):
     db.refresh(user)
     return user
 
-def check_sync_status(db: Session, sync_data: Schemas.sync.CheckSync):
+def check_sync_status(db: Session, userId: str, workoutsPendingUpload: List[Dict[str, str]], foodEntriesPendingUpload: List[Dict[str, str]], lastLocalSync: str):
+    lastLocalSync = datetime.fromisoformat(lastLocalSync)
     # Validate user existence
-    user = db.query(Models.userModel.User).filter(Models.userModel.User.id == sync_data.userId ).first()
+    user = db.query(Models.userModel.User).filter(Models.userModel.User.id == userId).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    has_pending_uploads = bool(sync_data.workoutsPendingUpload)
+    has_pending_uploads = bool(workoutsPendingUpload)
     
     # Identify server-side unsynced workouts (created after last sync)
     server_unsynced_workouts = db.query(Models.workoutModel.Workout).filter(
         Models.workoutModel.Workout.owner == user.id,
-        Models.workoutModel.Workout.created_at > sync_data.lastLocalSync
+        Models.workoutModel.Workout.created_at > lastLocalSync
     ).all()
     
     unsynced_food_entries = []  # TODO: Implement food entry sync logic later
@@ -80,7 +82,7 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
     exercises = sync_data.exercisesPendingUpload
     sets = sync_data.setsPendingUpload
     
-    # Save workouts to the database
+    # save workouts to database
     for workout in workouts:
         db_workout = Models.workoutModel.Workout(
             uuid=workout["UUID"],
@@ -92,11 +94,8 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
             created_at=workout["CREATED_AT"]
         )
         db.add(db_workout)
-    
-    # Commit workouts to generate UUIDs for foreign key references
-    db.commit()
-    
-    # Save exercises to the database
+        
+    # save exercises to database
     for exercise in exercises:
         db_exercise = Models.workoutModel.Exercise(
             uuid=exercise["UUID"],
@@ -104,11 +103,8 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
             reference_id=exercise["REFERENCE_ID"]
         )
         db.add(db_exercise)
-    
-    # Commit exercises
-    db.commit()
-    
-    # Save sets to the database
+        
+    # save sets to database
     for set in sets:
         db_set = Models.workoutModel.Set(
             uuid=set["UUID"],
@@ -117,14 +113,16 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
             reps=set["REPS"]
         )
         db.add(db_set)
-    
-    # Commit sets
+        
     db.commit()
     
-    # Get workouts that are stored on the cloud but not locally
+    # get workouts that are stored on the cloud but not locally by comparing lastLocalSync with each workout's created_at
+    lastLocalSync = datetime.fromisoformat(sync_data.lastLocalSync)
     incoming_workouts = db.query(Models.workoutModel.Workout).filter(
         Models.workoutModel.Workout.owner == user.id,
         Models.workoutModel.Workout.created_at > lastLocalSync
     ).all()
     
     return incoming_workouts
+    
+

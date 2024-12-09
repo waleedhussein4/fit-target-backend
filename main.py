@@ -111,6 +111,8 @@ def sync_workouts(sync_data: Schemas.sync.SyncRequest, db: Session = Depends(get
         # Log any other unexpected errors
         logger.error(f"Unexpected error during workout sync: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error: Unexpected issue: {str(e)}")
+    
+
 
 @app.post("/sync/check-sync")
 def check_sync_status(
@@ -122,7 +124,13 @@ def check_sync_status(
     """
     try:
         # Call the CRUD function to check sync status
-        status = Crud.usercrud.check_sync_status(db=db, sync_data=sync_data)
+        status = Crud.usercrud.check_sync_status(
+            db=db,
+            userId=sync_data.userId,
+            workoutsPendingUpload=sync_data.workoutsPendingUpload,
+            foodEntriesPendingUpload=sync_data.foodEntriesPendingUpload,
+            lastLocalSync=sync_data.lastLocalSync,
+        )
 
         return {"is_synced": status}
 
