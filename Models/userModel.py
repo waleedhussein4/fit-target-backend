@@ -18,7 +18,7 @@ class User(Base):
     targetWeight = Column(Float)
     weightMeasurementPreference = Column(String)
     targetPeriod = Column(Integer)
-    last_sync_time = Column(Integer, nullable=True)
+    last_sync_time = Column(String, nullable=True)
 
 
 

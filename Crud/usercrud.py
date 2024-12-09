@@ -120,10 +120,9 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
     db.commit()
     
     # get workouts that are stored on the cloud but not locally by comparing lastLocalSync with each workout's created_at
-    lastLocalSync = int(lastLocalSync)
     incoming_workouts = db.query(Models.workoutModel.Workout).filter(
         Models.workoutModel.Workout.owner == user.id,
-        Models.workoutModel.Workout.created_at > lastLocalSync
+        int(Models.workoutModel.Workout.created_at) > int(lastLocalSync)
     ).all()
     
     return incoming_workouts
