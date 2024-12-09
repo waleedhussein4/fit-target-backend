@@ -127,7 +127,7 @@ def check_sync_status(
             userId=sync_data.userId,
             workoutsPendingUpload=sync_data.workoutsPendingUpload,
             foodEntriesPendingUpload=sync_data.foodEntriesPendingUpload,
-            lastLocalSync=int(sync_data.lastLocalSync)
+            lastLocalSync=sync_data.lastLocalSync,
         )
 
         return {"is_synced": status}
