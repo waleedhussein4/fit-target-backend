@@ -52,7 +52,7 @@ def update_user_by_email(db: Session, email: str, updates: dict):
 
 def check_sync_status(db: Session, sync_data: Schemas.sync.CheckSync):
     # Validate user existence
-    user = db.query(Models.userModel.User).filter(Models.userModel.User.id == userId).first()
+    user = db.query(Models.userModel.User).filter(Models.userModel.User.id == sync_data.userId ).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
