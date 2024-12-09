@@ -3,6 +3,7 @@ import Models.userModel, Schemas.userCreate, Schemas.sync
 from Models.userModel import User
 from typing import List, Any, Dict
 from fastapi.exceptions import HTTPException
+import time
 
 def get_user(db: Session, user_id: int):
     return db.query(Models.userModel.User).filter(Models.userModel.User.id == user_id).first()
@@ -126,9 +127,9 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
         Models.workoutModel.Workout.created_at > int(sync_data.lastLocalSync)
     ).all()
     
-    # set user last_sync_time to the current time like 1733710186918
-    user.last_sync_time = int(time.time() * 1000)
-    db.commit()    
+    # Set the user's last_sync_time to the current time in milliseconds
+    user.last_sync_time = int(time.time() * 1000)  # Current Unix timestamp in milliseconds
+    db.commit()  # Save the update to the database
     
     return incoming_workouts
     
