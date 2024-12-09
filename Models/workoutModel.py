@@ -11,7 +11,7 @@ class Workout(Base):
     volume = Column(Integer, nullable=False)
     start_date = Column(Integer, nullable=False)
     end_date = Column(Integer, nullable=False)
-    last_updated = Column(Integer, nullable=False)
+    created_at = Column(Integer, nullable=False)
 
     def __repr__(self):
       return (f"<Workout(id={self.id}, local_id={self.local_id}, owner={self.owner}, sets={self.sets}, "
