@@ -122,7 +122,7 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
     # get workouts that are stored on the cloud but not locally by comparing lastLocalSync with each workout's created_at
     incoming_workouts = db.query(Models.workoutModel.Workout).filter(
         Models.workoutModel.Workout.owner == user.id,
-        int(Models.workoutModel.Workout.created_at) > int(lastLocalSync)
+        Models.workoutModel.Workout.created_at > int(lastLocalSync)
     ).all()
     
     # set user last_sync_time to the current time like 1733710186918
