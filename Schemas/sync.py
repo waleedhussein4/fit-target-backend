@@ -10,4 +10,6 @@ class CheckSync(BaseModel):
 class SyncRequest(BaseModel):
     userId: int
     workoutsPendingUpload: List[dict]  # Accept raw workout objects as dictionaries
+    exercisesPendingUpload: List[dict]  # Accept raw exercise objects as dictionaries
+    setsPendingUpload: List[dict]  # Accept raw set objects as dictionaries
     lastLocalSync: str  # ISO 8601 formatted string
