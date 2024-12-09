@@ -50,18 +50,18 @@ def update_user_by_email(db: Session, email: str, updates: dict):
     db.refresh(user)
     return user
 
-def check_sync_status(db: Session, userId: str, workoutsPendingUpload: List[Dict[str, str]], foodEntriesPendingUpload: List[Dict[str, str]], lastLocalSync: str):
+def check_sync_status(db: Session, sync_data: Schemas.sync.CheckSync):
     # Validate user existence
     user = db.query(Models.userModel.User).filter(Models.userModel.User.id == userId).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    has_pending_uploads = bool(workoutsPendingUpload)
+    has_pending_uploads = bool(sync_data.workoutsPendingUpload)
     
     # Identify server-side unsynced workouts (created after last sync)
     server_unsynced_workouts = db.query(Models.workoutModel.Workout).filter(
         Models.workoutModel.Workout.owner == user.id,
-        Models.workoutModel.Workout.created_at > lastLocalSync
+        Models.workoutModel.Workout.created_at > sync_data.lastLocalSync
     ).all()
     
     unsynced_food_entries = []  # TODO: Implement food entry sync logic later
