@@ -82,7 +82,7 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
     exercises = sync_data.exercisesPendingUpload
     sets = sync_data.setsPendingUpload
     
-    # save workouts to database
+    # Save workouts to the database
     for workout in workouts:
         db_workout = Models.workoutModel.Workout(
             uuid=workout["UUID"],
@@ -94,8 +94,11 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
             created_at=workout["CREATED_AT"]
         )
         db.add(db_workout)
-        
-    # save exercises to database
+    
+    # Commit workouts to generate UUIDs for foreign key references
+    db.commit()
+    
+    # Save exercises to the database
     for exercise in exercises:
         db_exercise = Models.workoutModel.Exercise(
             uuid=exercise["UUID"],
@@ -103,8 +106,11 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
             reference_id=exercise["REFERENCE_ID"]
         )
         db.add(db_exercise)
-        
-    # save sets to database
+    
+    # Commit exercises
+    db.commit()
+    
+    # Save sets to the database
     for set in sets:
         db_set = Models.workoutModel.Set(
             uuid=set["UUID"],
@@ -113,10 +119,11 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
             reps=set["REPS"]
         )
         db.add(db_set)
-        
+    
+    # Commit sets
     db.commit()
     
-    # get workouts that are stored on the cloud but not locally by comparing lastLocalSync with each workout's created_at
+    # Get workouts that are stored on the cloud but not locally
     lastLocalSync = datetime.fromisoformat(sync_data.lastLocalSync)
     incoming_workouts = db.query(Models.workoutModel.Workout).filter(
         Models.workoutModel.Workout.owner == user.id,
@@ -124,5 +131,3 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
     ).all()
     
     return incoming_workouts
-    
-
