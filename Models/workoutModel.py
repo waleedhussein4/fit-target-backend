@@ -9,9 +9,9 @@ class Workout(Base):
     owner = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)  # Reference to User
     sets = Column(Integer, nullable=False)
     volume = Column(Integer, nullable=False)
-    start_date = Column(String, nullable=False)
-    end_date = Column(String, nullable=False)
-    created_at = Column(String, nullable=False)
+    start_date = Column(BigInt, nullable=False)
+    end_date = Column(BigInt, nullable=False)
+    created_at = Column(BigInt, nullable=False)
 
     def __repr__(self):
       return (f"<Workout(id={self.id}, local_id={self.local_id}, owner={self.owner}, sets={self.sets}, "

@@ -88,9 +88,9 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
             owner=user.id,
             sets=workout["SETS"],
             volume=workout["VOLUME"],
-            start_date=workout["START_DATE"],
-            end_date=workout["END_DATE"],
-            created_at=workout["CREATED_AT"]
+            start_date=int(workout["START_DATE"]),
+            end_date=int(workout["END_DATE"]),
+            created_at=int(workout["CREATED_AT"])
         )
         db.add(db_workout)
     
@@ -124,6 +124,10 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
         Models.workoutModel.Workout.owner == user.id,
         int(Models.workoutModel.Workout.created_at) > int(lastLocalSync)
     ).all()
+    
+    # set user last_sync_time to the current time like 1733710186918
+    user.last_sync_time = int(time.time() * 1000)
+    db.commit()    
     
     return incoming_workouts
     
