@@ -131,6 +131,6 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
     user.last_sync_time = int(time.time() * 1000)  # Current Unix timestamp in milliseconds
     db.commit()  # Save the update to the database
     
-    return true
+    return True
     
 
