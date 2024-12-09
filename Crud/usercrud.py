@@ -93,6 +93,8 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
             created_at=workout["CREATED_AT"]
         )
         db.add(db_workout)
+    
+    db.commit()
         
     # save exercises to database
     for exercise in exercises:
@@ -102,6 +104,8 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
             reference_id=exercise["REFERENCE_ID"]
         )
         db.add(db_exercise)
+        
+    db.commit()
         
     # save sets to database
     for set in sets:
