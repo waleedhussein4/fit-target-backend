@@ -93,7 +93,7 @@ def sync_workouts(sync_data: Schemas.sync.SyncRequest, db: Session = Depends(get
     try:
         # Call the CRUD function to sync workout data and send back the workouts to be locally stored
         incoming_workouts = Crud.usercrud.sync_workouts(db=db, sync_data=sync_data)
-        return {"workouts": incoming_workouts}
+        return {"success: incoming_workouts"}
     
     except SQLAlchemyError as e:
         # Log SQLAlchemy database errors
