@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, BigInteger
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey
 from database import Base
 
 class Workout(Base):
@@ -9,9 +9,9 @@ class Workout(Base):
     owner = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)  # Reference to User
     sets = Column(Integer, nullable=False)
     volume = Column(Integer, nullable=False)
-    start_date = Column(BigInteger, nullable=False)
-    end_date = Column(BigInteger, nullable=False)
-    last_updated = Column(BigInteger, nullable=False)
+    start_date = Column(Integer, nullable=False)
+    end_date = Column(Integer, nullable=False)
+    last_updated = Column(Integer, nullable=False)
 
     def __repr__(self):
       return (f"<Workout(id={self.id}, local_id={self.local_id}, owner={self.owner}, sets={self.sets}, "

@@ -1,4 +1,4 @@
-from sqlalchemy import Column,  Integer, String, Float, Boolean, BigInteger 
+from sqlalchemy import Column, Integer, String, Float, Boolean
 
 from database import Base
 
@@ -18,7 +18,7 @@ class User(Base):
     targetWeight = Column(Float)
     weightMeasurementPreference = Column(String)
     targetPeriod = Column(Integer)
-    last_sync_time = Column(BigInteger, nullable=True)
+    last_sync_time = Column(Integer, nullable=True)
 
 
 
