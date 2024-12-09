@@ -74,57 +74,55 @@ def check_sync_status(db: Session, userId: str, workoutsPendingUpload: List[Dict
     return not sync_required
 
 def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
-    # add new workouts to the server database
-    # add new exercises to the server database
-    # add new sets to the server database
+    user = db.query(Models.userModel.User).filter(Models.userModel.User.id == sync_data.userId).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
     
-    # Fetch unsynced server-side workouts where created_at is later than sync_data.lastLocalSync
-    unsynced_workouts = db.query(Models.workoutModel.Workout).filter(
-        Models.workoutModel.Workout.owner == sync_data.userId,
-        Models.workoutModel.Workout.created_at > sync_data.lastLocalSync
+    workouts = sync_data.workoutsPendingUpload
+    exercises = sync_data.exercisesPendingUpload
+    sets = sync_data.setsPendingUpload
+    
+    # save workouts to database
+    for workout in workouts:
+        db_workout = Models.workoutModel.Workout(
+            uuid=workout["UUID"],
+            owner=user.id,
+            sets=workout["SETS"],
+            volume=workout["VOLUME"],
+            start_date=workout["START_DATE"],
+            end_date=workout["END_DATE"],
+            created_at=workout["CREATED_AT"]
+        )
+        db.add(db_workout)
+        
+    # save exercises to database
+    for exercise in exercises:
+        db_exercise = Models.workoutModel.Exercise(
+            uuid=exercise["UUID"],
+            workout_uuid=exercise["WORKOUT_UUID"],
+            reference_id=exercise["REFERENCE_ID"]
+        )
+        db.add(db_exercise)
+        
+    # save sets to database
+    for set in sets:
+        db_set = Models.workoutModel.Set(
+            uuid=set["UUID"],
+            exercise_uuid=set["EXERCISE_UUID"],
+            weight=set["WEIGHT"],
+            reps=set["REPS"]
+        )
+        db.add(db_set)
+        
+    db.commit()
+    
+    # get workouts that are stored on the cloud but not locally by comparing lastLocalSync with each workout's created_at
+    lastLocalSync = datetime.fromisoformat(sync_data.lastLocalSync)
+    incoming_workouts = db.query(Models.workoutModel.Workout).filter(
+        Models.workoutModel.Workout.owner == user.id,
+        Models.workoutModel.Workout.created_at > lastLocalSync
     ).all()
     
-    # Process client-pending workouts
-    for workout in sync_data.workoutsPendingUpload:
-        existing_workout = db.query(Models.workoutModel.Workout).filter(Models.workoutModel.Workout.uuid == workout["UUID"]).first()
-        if not existing_workout:
-            # Add new workout to the server database
-            new_workout = Models.workoutModel.Workout(
-                uuid=workout["UUID"],
-                owner=sync_data.userId,
-                volume=workout["VOLUME"],
-                start_date=workout["START_DATE"],
-                end_date=workout.get("END_DATE"),
-                created_at=workout["CREATED_AT"]
-            )
-            db.add(new_workout)
-        
-        # Process exercises for the current workout
-        for exercise in workout["EXERCISES"]:
-            existing_exercise = db.query(Models.workoutModel.Exercise).filter(Models.workoutModel.Exercise.uuid == exercise["UUID"]).first()
-            if not existing_exercise:
-                # Add new exercise to the server database
-                new_exercise = Models.workoutModel.Exercise(
-                    uuid=exercise["UUID"],
-                    workout_uuid=workout["UUID"],
-                    reference_id=exercise["REFERENCE_ID"]
-                )
-                db.add(new_exercise)
-            
-            # Process sets for the current exercise
-            for set in exercise["SETS"]:
-                existing_set = db.query(Models.workoutModel.Set).filter(Models.workoutModel.Set.uuid == set["UUID"]).first()
-                if not existing_set:
-                    # Add new set to the server database
-                    new_set = Models.workoutModel.Set(
-                        uuid=set["UUID"],
-                        exercise_uuid=exercise["UUID"],
-                        weight=set["WEIGHT"],
-                        reps=set["REPS"]
-                    )
-                    db.add(new_set)
+    return incoming_workouts
     
-    db.commit()
-    #return unsynced_workouts to be locally stored
-    return unsynced_workouts
 
