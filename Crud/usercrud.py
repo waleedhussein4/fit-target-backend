@@ -81,18 +81,19 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
     exercises = sync_data.exercisesPendingUpload
     sets = sync_data.setsPendingUpload
     
-    # save workouts to database
+    # save workouts to database unless they already exist
     for workout in workouts:
         db_workout = Models.workoutModel.Workout(
             uuid=workout["UUID"],
             owner=user.id,
             sets=workout["SETS"],
             volume=workout["VOLUME"],
-            start_date=int(workout["START_DATE"]),
-            end_date=int(workout["END_DATE"]),
-            created_at=int(workout["CREATED_AT"])
+            start_date=workout["START_DATE"],
+            end_date=workout["END_DATE"],
+            created_at=workout["CREATED_AT"]
         )
         db.add(db_workout)
+    
     
     db.commit()
         
@@ -122,7 +123,7 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
     # get workouts that are stored on the cloud but not locally by comparing lastLocalSync with each workout's created_at
     incoming_workouts = db.query(Models.workoutModel.Workout).filter(
         Models.workoutModel.Workout.owner == user.id,
-        Models.workoutModel.Workout.created_at > int(lastLocalSync)
+        Models.workoutModel.Workout.created_at > int(sync_data.lastLocalSync)
     ).all()
     
     # set user last_sync_time to the current time like 1733710186918
