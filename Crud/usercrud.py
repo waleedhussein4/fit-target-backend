@@ -3,7 +3,6 @@ import Models.userModel, Schemas.userCreate, Schemas.sync
 from Models.userModel import User
 from typing import List, Any, Dict
 from fastapi.exceptions import HTTPException
-from datetime import datetime
 
 def get_user(db: Session, user_id: int):
     return db.query(Models.userModel.User).filter(Models.userModel.User.id == user_id).first()
@@ -52,7 +51,7 @@ def update_user_by_email(db: Session, email: str, updates: dict):
     return user
 
 def check_sync_status(db: Session, userId: str, workoutsPendingUpload: List[Dict[str, str]], foodEntriesPendingUpload: List[Dict[str, str]], lastLocalSync: str):
-    lastLocalSync = datetime.fromisoformat(lastLocalSync)
+    lastLocalSync = int(lastLocalSync)
     # Validate user existence
     user = db.query(Models.userModel.User).filter(Models.userModel.User.id == userId).first()
     if not user:
@@ -117,7 +116,7 @@ def sync_workouts(db: Session, sync_data: Schemas.sync.SyncRequest):
     db.commit()
     
     # get workouts that are stored on the cloud but not locally by comparing lastLocalSync with each workout's created_at
-    lastLocalSync = datetime.fromisoformat(sync_data.lastLocalSync)
+    lastLocalSync = int(lastLocalSync)
     incoming_workouts = db.query(Models.workoutModel.Workout).filter(
         Models.workoutModel.Workout.owner == user.id,
         Models.workoutModel.Workout.created_at > lastLocalSync
