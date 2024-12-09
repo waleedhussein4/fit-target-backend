@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, BigInt
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, BIGINT
 from database import Base
 
 class Workout(Base):
